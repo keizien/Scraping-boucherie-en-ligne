@@ -1,11 +1,3 @@
-"""
-Script de scraping pour la boucherie Janssen Carrier
-Récupère les produits depuis l'API DigiCommerce et génère un CSV pour WooCommerce
-
-Auteur: Généré par Antigravity
-Date: 2026-01-22
-"""
-
 import requests
 import csv
 import json
@@ -41,16 +33,16 @@ def fetch_catalog_data() -> dict:
         "delivery_method": "0"
     }
     
-    print("🔄 Récupération des données depuis l'API DigiCommerce...")
+    print("Récupération des données depuis l'API DigiCommerce...")
     
     try:
         response = requests.get(API_URL, params=params, timeout=30)
         response.raise_for_status()
         data = response.json()
-        print("✅ Données récupérées avec succès!")
+        print("Données récupérées avec succès!")
         return data
     except requests.exceptions.RequestException as e:
-        print(f"❌ Erreur lors de la récupération des données: {e}")
+        print(f"Erreur lors de la récupération des données: {e}")
         raise
 
 
@@ -61,7 +53,7 @@ def extract_product_info(product: dict, category_name: str) -> dict:
 
     sku = product.get("slug") or product.get("uniq", "")
 
-    # ✅ Image = URL WordPress (PAS DigiCommerce)
+    # Image = URL WordPress (PAS DigiCommerce)
     image_url = f"{SITE_URL}{WP_UPLOAD_PATH}{sku}.jpg"
 
     description = product.get("description", "") or ""
@@ -116,7 +108,7 @@ def process_catalog(data: dict) -> list:
     # Traitement des catégories
     categories = data.get("categories", [])
     
-    print(f"\n📦 Nombre de catégories trouvées: {len(categories)}")
+    print(f"\n Nombre de catégories trouvées: {len(categories)}")
     
     for category in categories:
         category_name = category.get("name", "Sans catégorie")
@@ -134,7 +126,7 @@ def process_catalog(data: dict) -> list:
     # Produits favoris/mis en avant
     favorites = good_deals.get("favorite", [])
     if favorites:
-        print(f"\n⭐ Produits favoris: {len(favorites)}")
+        print(f"\n Produits favoris: {len(favorites)}")
         for product in favorites:
             category_slug = product.get("category_slug", "")
             # On essaie de trouver le nom de la catégorie
@@ -153,14 +145,14 @@ def process_catalog(data: dict) -> list:
     # Produits en promo
     promos = good_deals.get("promo", [])
     if promos:
-        print(f"🏷️  Produits en promo: {len(promos)}")
+        print(f"Produits en promo: {len(promos)}")
     
     return products
 
 
 def download_images(products: list, output_dir: str = "images") -> None:
     os.makedirs(output_dir, exist_ok=True)
-    print(f"\n📸 Téléchargement des images depuis DigiCommerce...")
+    print(f"\n Téléchargement des images depuis DigiCommerce...")
 
     downloaded = 0
     skipped = 0
@@ -193,11 +185,11 @@ def download_images(products: list, output_dir: str = "images") -> None:
 
         except Exception as e:
             errors += 1
-            print(f"⚠️ Image échouée pour {sku}: {e}")
+            print(f"Image échouée pour {sku}: {e}")
 
-    print(f"✅ {downloaded} images téléchargées")
-    print(f"⏭️ {skipped} produits sans image")
-    print(f"❌ {errors} erreurs")
+    print(f"{downloaded} images téléchargées")
+    print(f"{skipped} produits sans image")
+    print(f"{errors} erreurs")
 
 
 
@@ -231,7 +223,7 @@ def export_to_woocommerce_csv(products: list, filename: str = "produits_woocomme
         "Tags",
     ]
     
-    print(f"\n📄 Export vers '{filename}'...")
+    print(f"\n Export vers '{filename}'...")
     
     with open(filename, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f, delimiter=";")  # Point-virgule pour Excel FR
@@ -258,7 +250,7 @@ def export_to_woocommerce_csv(products: list, filename: str = "produits_woocomme
             ]
             writer.writerow(row)
     
-    print(f"  ✅ {len(products)} produits exportés!")
+    print(f" {len(products)} produits exportés!")
 
 
 def export_to_json(products: list, filename: str = "produits_complets.json") -> None:
@@ -269,12 +261,12 @@ def export_to_json(products: list, filename: str = "produits_complets.json") -> 
         products: Liste des produits à exporter
         filename: Nom du fichier JSON de sortie
     """
-    print(f"\n📄 Export JSON vers '{filename}'...")
+    print(f"\n Export JSON vers '{filename}'...")
     
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(products, f, ensure_ascii=False, indent=2)
     
-    print(f"  ✅ {len(products)} produits exportés en JSON!")
+    print(f" {len(products)} produits exportés en JSON!")
 
 
 def export_categories(data: dict, filename: str = "categories.csv") -> None:
@@ -287,7 +279,7 @@ def export_categories(data: dict, filename: str = "categories.csv") -> None:
     """
     categories = data.get("categories", [])
     
-    print(f"\n📁 Export des catégories vers '{filename}'...")
+    print(f"\n Export des catégories vers '{filename}'...")
     
     with open(filename, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f, delimiter=";")
@@ -305,7 +297,7 @@ def export_categories(data: dict, filename: str = "categories.csv") -> None:
             ]
             writer.writerow(row)
     
-    print(f"  ✅ {len(categories)} catégories exportées!")
+    print(f" {len(categories)} catégories exportées!")
 
 
 def print_summary(products: list, data: dict) -> None:
@@ -315,7 +307,7 @@ def print_summary(products: list, data: dict) -> None:
     categories = data.get("categories", [])
     
     print("\n" + "=" * 60)
-    print("📊 RÉSUMÉ DU SCRAPING")
+    print("RÉSUMÉ DU SCRAPING")
     print("=" * 60)
     print(f"  • Nombre total de produits: {len(products)}")
     print(f"  • Nombre de catégories: {len(categories)}")
@@ -345,7 +337,7 @@ def main():
     Fonction principale du script de scraping.
     """
     print("=" * 60)
-    print("🥩 SCRAPING BOUCHERIE JANSSEN CARRIER")
+    print("SCRAPING BOUCHERIE JANSSEN CARRIER")
     print("=" * 60)
     print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Source: {API_URL}")
@@ -368,12 +360,12 @@ def main():
     # 5. Résumé
     print_summary(products, data)
     
-    print("\n✅ Scraping terminé avec succès!")
+    print("\n Scraping terminé avec succès!")
     print("\nFichiers générés:")
     print("  • produits_woocommerce.csv - Import WooCommerce")
     print("  • produits_complets.json - Données complètes")
     print("  • categories.csv - Catégories")
-    print("\n💡 Pour importer dans WooCommerce:")
+    print("\n Pour importer dans WooCommerce:")
     print("   1. Allez dans WooCommerce > Produits > Importer")
     print("   2. Sélectionnez le fichier 'produits_woocommerce.csv'")
     print("   3. Choisissez le séparateur ';' (point-virgule)")
