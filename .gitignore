@@ -1,24 +1,18 @@
-# Python defaults
 __pycache__/
 *.pyc
 
-# Virtual environments
 .venv
 venv
 env
 
-# Environment variables
 .env
 
-# Generated data/Output files (Scraping results)
 categories.csv
 produits_complets.json
 produits_woocommerce.csv
 
-# Downloaded/Processed Images
 images/
 images_import/
 
-# OS generated files
 .DS_Store
 Thumbs.db
